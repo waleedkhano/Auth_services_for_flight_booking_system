@@ -21,20 +21,36 @@ class UserService {
 
   async signIn(email, plainPassword) {
     try {
-        //fetch user using email
-        const user = await this.userRepository.getByEmail(email);
+      //fetch user using email
+      const user = await this.userRepository.getByEmail(email);
 
-        //compare plain password with encrypted password
-        const passwordMatch = this.checkpassord(plainPassword, user.password);
-        if(!passwordMatch){
-            console.log("Password does not match");
-            throw {error: "Incorrect password"};
-        }
+      //compare plain password with encrypted password
+      const passwordMatch = this.checkpassord(plainPassword, user.password);
+      if (!passwordMatch) {
+        console.log("Password does not match");
+        throw { error: "Incorrect password" };
+      }
 
-        //create a JWT token and send it to the user
-        const jwtToken = this.createToken({email: user.email, id: user.id});
-        return jwtToken;
+      //create a JWT token and send it to the user
+      const jwtToken = this.createToken({ email: user.email, id: user.id });
+      return jwtToken;
+    } catch (error) {
+      console.log("Something went wrong in the service layer");
+      throw error;
+    }
+  }
 
+  async isAuthenticated(token) {
+    try {
+      const response = this.verifyToken(token);
+      if (!response) {
+        throw { error: "Invalid token" };
+      }
+      const user = await this.userRepository.getById(response.id);
+      if (!user) {
+        throw { error: "No user with the corresponding token exists" };
+      }
+      return user.id;
     } catch (error) {
       console.log("Something went wrong in the service layer");
       throw error;

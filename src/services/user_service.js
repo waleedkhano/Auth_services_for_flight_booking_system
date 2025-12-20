@@ -38,6 +38,9 @@ class UserService {
       const jwtToken = this.createToken({ email: user.email, id: user.id });
       return jwtToken;
     } catch (error) {
+      if (error.name == "AttributeNotFound") {
+        throw error;
+      }
       console.log("Something went wrong in the service layer");
       throw error;
     }

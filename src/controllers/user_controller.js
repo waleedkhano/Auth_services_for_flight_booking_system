@@ -16,11 +16,11 @@ const create = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({
-      message: "something went wrong",
+    return res.status(error.statusCode).json({
+      message: error.message,
       data: {},
       success: false,
-      err: error,
+      err: error.description,
     });
   }
 };
